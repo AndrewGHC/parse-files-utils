@@ -1,3 +1,5 @@
+A fork of the below repo that excludes a broken package (Gcs adapter) and changes the Parse Query to be conditional. Previously, if a document had two or more file fields, and at least one field was undefined, all other files for that document would not be transferred. This fork ensures that all files are downloaded.
+
 # parse-files-utils
 [![Build Status](https://travis-ci.org/parse-server-modules/parse-files-utils.svg?branch=master)](https://travis-ci.org/parse-server-modules/parse-files-utils)
 [![codecov](https://codecov.io/gh/parse-server-modules/parse-files-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/parse-server-modules/parse-files-utils)
@@ -18,16 +20,16 @@ This utility will do the following:
 DISCLAIMER
 ----------
 Please note: all tools/ scripts in this repo are released for use "AS IS" **without any warranties of any kind**,
-including, but not limited to their installation, use, or performance.  We disclaim any and all warranties, either 
-express or implied, including but not limited to any warranty of noninfringement, merchantability, and/ or fitness 
-for a particular purpose.  We do not warrant that the technology will meet your requirements, that the operation 
+including, but not limited to their installation, use, or performance.  We disclaim any and all warranties, either
+express or implied, including but not limited to any warranty of noninfringement, merchantability, and/ or fitness
+for a particular purpose.  We do not warrant that the technology will meet your requirements, that the operation
 thereof will be uninterrupted or error-free, or that any errors will be corrected.
 
-Any use of these scripts and tools is **at your own risk**.  There is no guarantee that they have been through 
-thorough testing in a comparable environment and we are not responsible for any damage or data loss incurred with 
+Any use of these scripts and tools is **at your own risk**.  There is no guarantee that they have been through
+thorough testing in a comparable environment and we are not responsible for any damage or data loss incurred with
 their use.
 
-You are responsible for reviewing and testing any scripts you run *thoroughly* before use in any non-testing 
+You are responsible for reviewing and testing any scripts you run *thoroughly* before use in any non-testing
 environment.
 
 Thanks,  
@@ -36,9 +38,9 @@ The *UNOFFICIAL* parse-server-modules team
 [(this disclaimer was originally published here)](https://github.com/mongodb/support-tools/blob/master/README.md)
 
 #### \*WARNING\*
-As soon as this script transfers files away from Parse.com hosted files (and renames them in the database) 
-any clients that use api.parse.com will no longer be able to access the files. 
-See the section titled "5. Files" in the [Parse Migration Guide](https://parse.com/migration) 
+As soon as this script transfers files away from Parse.com hosted files (and renames them in the database)
+any clients that use api.parse.com will no longer be able to access the files.
+See the section titled "5. Files" in the [Parse Migration Guide](https://parse.com/migration)
 and Parse Server [issue #1582](https://github.com/ParsePlatform/parse-server/issues/1582).
 
 ## Installation
@@ -60,14 +62,14 @@ $ npm start config.js
 
 * `applicationId`: Parse application id.
 * `masterKey`: Parse master key.
-* `serverURL`: The URL for the Parse server (default: http://api.parse.com/1). 
+* `serverURL`: The URL for the Parse server (default: http://api.parse.com/1).
 This is used to with `applicationId` and `masterKey` to get the schema and fetch all files/objects.
-* `renameFiles` (boolean): Whether or not to rename Parse hosted files. 
+* `renameFiles` (boolean): Whether or not to rename Parse hosted files.
 This removes the "tfss-" or legacy Parse filename prefix before saving with the new file adapter.
 * `renameInDatabase` (boolean): Whether or not to rename files in MongoDB.
-* `mongoURL`: MongoDB connection url. 
+* `mongoURL`: MongoDB connection url.
 Direct access to the database is needed because Parse SDK doesn't allow direct writing to file fields.
-* `filesToTransfer`: Which files to transfer. 
+* `filesToTransfer`: Which files to transfer.
 Accepted options:
   * `"parseOnly"`: only process files with a filename that starts with "tfss-" or matches Parse's legacy file name format.
   * `"parseServerOnly"`: only process files with a filename that **does not** start with "tfss-" nor match Parse's legacy file name format.
@@ -89,12 +91,12 @@ Accepted options:
 ## Parse File Migrations
 
 If you need to migrate files from hosted Parse.com to self-hosted Parse Server,
-you should follow one of the below strategies. 
-Given [ParsePlatform/parse-server#1582](https://github.com/ParsePlatform/parse-server/issues/1582), 
-there will not be any updates to api.parse.com. This leaves two options for the file migration. 
+you should follow one of the below strategies.
+Given [ParsePlatform/parse-server#1582](https://github.com/ParsePlatform/parse-server/issues/1582),
+there will not be any updates to api.parse.com. This leaves two options for the file migration.
 Each one has its own set of advantages and disadvantages.
 
-**Option 1**: 
+**Option 1**:
 "Supporting clients that access via api.parse.com is *not* important"
 * File utils configuration:
   * `filesToTransfer`: 'parseOnly'
@@ -113,15 +115,15 @@ Each one has its own set of advantages and disadvantages.
 * Additional steps required:
   * Run file migration again after all clients switch to Parse Server or before Jan 28
 
-**Option 2**: 
+**Option 2**:
 "Supporting clients that access via api.parse.com is important"
 * File utils configuration:
   * `filesToTransfer`: 'parseOnly'
   * `renameFiles`: false
   * `renameInDatabase`: false
-* Parse Server configuration: 
+* Parse Server configuration:
   * Use version >= 2.2.16
-  * remove `fileKey` from settings 
+  * remove `fileKey` from settings
 * After file migration:
   * api.parse.com clients:
     * can see all previously uploaded files
@@ -131,4 +133,3 @@ Each one has its own set of advantages and disadvantages.
     * can not see new files uploaded by api.parse.com clients
 * Additional steps required:
   * Run file migration again after all clients switch to Parse Server or before Jan 28
-
